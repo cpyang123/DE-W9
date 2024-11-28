@@ -1,42 +1,37 @@
 import subprocess
+import os
 
 
-def test_extract():
-    """tests extract()"""
+def test_notebook():
+    """tests notebook()"""
+    notebook_path = "EDA-Modeling.ipynb"
+
     result = subprocess.run(
-        ["python", "main.py", "extract"],
-        capture_output=True,
-        text=True,
+        [
+            "jupyter",
+            "nbconvert",
+            "--to",
+            "notebook",
+            "--execute",
+            "--output",
+            "executed_notebook.ipynb",
+            notebook_path,
+        ],
         check=True,
+        capture_output=True,  # Capture stdout and stderr
+        text=True,  # Decode output as a string
     )
     assert result.returncode == 0
-    assert "Extracting data..." in result.stdout
 
 
-def test_transform_load():
-    """tests transfrom_load"""
-    result = subprocess.run(
-        ["python", "main.py", "transform_load"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    assert result.returncode == 0
-    assert "Transforming data..." in result.stdout
+def test_model_output_exists():
+    # Construct the full file path
+    file_path = "model_output.csv"
 
-
-def test_general_query():
-    """tests general_query"""
-    result = subprocess.run(
-        ["python", "main.py", "general_query"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    assert result.returncode == 0
+    # Check if the file exists
+    assert os.path.isfile(file_path)
 
 
 if __name__ == "__main__":
-    test_extract()
-    test_transform_load()
-    test_general_query()
+    test_notebook()
+    test_model_output_exists()
